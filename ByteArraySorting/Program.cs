@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Text;
 
 namespace ByteArraySorting
 {
@@ -8,91 +7,148 @@ namespace ByteArraySorting
     {
         static void Main(string[] args)
         {
-            
-            Console.WriteLine("For parcing please enter empty line\n");
-            string input = Console.ReadLine();
-            string allStrings = "";
+            Console.Write("Please enter number of elements: ");
+            int numberOfElements = 0;
 
-            //Get strings until the input is empty
-            while(input.Length > 0)
+            while (true)
             {
-                allStrings += ";" + input;
-                input = Console.ReadLine();
+                int inputNumber = Console.Read();
+                //check if the entered character is a digit
+                if(inputNumber >= '0' && inputNumber <= '9')
+                {
+                    numberOfElements = numberOfElements * 10 + (inputNumber - '0');
+                }
+                else
+                {
+                    break;
+                }
+            }
+            Console.Read();
+            byte[][] bytes = new byte[numberOfElements][];
+            char[][] chars = new char[numberOfElements][];
+
+            //colection data and converting to byte
+            for (int i = 0; i < numberOfElements; i++)
+            {
+                char[] element = new char[0];
+                Console.Write($"Please enter element {i + 1}: ");
+                while (true)
+                {
+                    char inputChar = (char)Console.Read();
+
+                    if(
+                        (inputChar >= '0' && inputChar <= '9') ||
+                        (inputChar >= 'a' && inputChar <= 'z') ||
+                        (inputChar >= 'A' && inputChar <= 'Z'))
+                    {
+                        element = AddCharToArray(element, inputChar);
+                    }
+                    else if(inputChar == '\n' ||  inputChar == '\0')
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        chars[i] = element;
+                        break;
+                    }
+                }
+
             }
             
-            if (allStrings.Length > 0 && allStrings[0] == ';')
-            {
-                allStrings = allStrings.Substring(1);
-            }
-            //convert all the input to a array
-            string[] array = allStrings.Split(';');
+            //Converting: char -> byte
 
-            string[] sortedArray = SortByteArray(ConvertToByteArray(array));
-
-            //print sorted array
-            
-            foreach(var item in sortedArray)
+            for (int i = 0;i < chars.Length;i++)
             {
-                Console.WriteLine(item.ToString());
+                byte[] list = new byte[chars[i].Length];
+                for (int j = 0; j < chars[i].Length; j++)
+                {
+                    list[j] = (byte)chars[i][j];
+                }
+                bytes[i] = list;
             }
+
+            bytes = SortByteArray(bytes);
+
+            //Converting: byte -> char
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                char[] list = new char[bytes[i].Length];
+                for (int j = 0; j < bytes[i].Length; j++)
+                {
+                    list[j] = (char)bytes[i][j];
+                }
+                chars[i] = list;
+            }
+            Console.WriteLine();
+            Console.Write("The sorted array is: ");
+            for (int i = 0; i < chars.Length-1; i++)
+            {
+                for (int j = 0; j < chars[i].Length; j++)
+                {
+                    Console.Write($"{chars[i][j]}");
+                }
+                Console.Write(", ");
+            }
+            for (int i = 0; i < chars[chars.Length-1].Length; i++)
+            {
+                Console.Write($"{chars[chars.Length-1][i]}");
+            }
+
             
             Console.WriteLine("\n\nPress any key for closing");
             Console.ReadKey();
         }
-        /// <summary>
-        /// Converts to byte array.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <returns></returns>
-        private static string[] ConvertToByteArray(string[] array)
-        {
-            string[] bytes = new string[array.Length];
 
-            for (int i = 0; i < array.Length; i++)
-            {
-                // from: https://stackoverflow.com/questions/5657169/convert-string-to-byte
-                byte[] arr = Encoding.UTF8.GetBytes(array[i]);//UTF8 & ASCII giving the same result at the end
-                
-                for(int j = 0;j < arr.Length ; j++)
-                {
-                    bytes[i] += arr[j];
-                }
-            }
-
-            return bytes;
-        }
-        /// <summary>
-        /// Sorts the byte array.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <returns></returns>
-        private static string[] SortByteArray(string[] array) //Bubble sort
+        private static byte[][] SortByteArray(byte[][] bytes)
         {
-            //from: https://www.geeksforgeeks.org/bubble-sort/
-            string[] copy = array;
-            for (int i = 0; i < copy.Length-1; i++)
+            byte[][] arr = bytes;
+
+            for (int i = 0; i < arr.Length-1; i++)
             {
-                for (int j = 0; j < copy.Length - i - 1; j++)
+                for (int j = i+1; j < arr.Length; j++)
                 {
-                    if (copy[j].Length > copy[j + 1].Length)
+                    if (arr[i].Length > arr[j].Length)
                     {
-                        string temp = copy[j];
-                        copy[j] = copy[j + 1];
-                        copy[j + 1] = temp;
+                        byte[] temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
                     }
-                    else if (copy[j].Length == copy[j + 1].Length)
+                    else if (arr[i].Length == arr[j].Length)
                     {
-                        //from: https://www.c-sharpcorner.com/UploadFile/mahesh/compare-strings-in-C-Sharp/#:~:text=Figure%201.-,Using%20String.Compare,-String.Compare%20method
-                        if (string.Compare(copy[j], copy[j+1]) > 0)
+                        for (int k = 0; k < arr[i].Length; k++)
                         {
-                            string temp = copy[j];
-                            copy[j] = copy[j + 1];
-                            copy[j + 1] = temp;
+                            if (arr[i][k] > arr[j][k])
+                            {
+                                byte[] temp = arr[i];
+                                arr[i] = arr[j];
+                                arr[j] = temp;
+                                break;
+                            }
+                            else if (arr[i][k] < arr[j][k])
+                            {
+                                break;
+                            }
                         }
                     }
                 }
             }
-            return copy;
+            return arr;
         }
+
+        private static char[] AddCharToArray(char[] arr, char c)
+        {
+            char[] list = new char[arr.Length+1];
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                list[i] = arr[i];
+            }
+            list[arr.Length] = c;
+
+            return list;
+        }
+        
     }
 }
