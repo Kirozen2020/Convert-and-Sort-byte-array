@@ -35,12 +35,12 @@ namespace ByteArraySorting
                 while (true)
                 {
                     char inputChar = (char)Console.Read();
-
-                    if(
-                        (inputChar >= '0' && inputChar <= '9') ||
-                        (inputChar >= 'a' && inputChar <= 'z') ||
-                        (inputChar >= 'A' && inputChar <= 'Z'))
-                    {
+                    //the ascii code I have took from here
+                    // https://www.dotnetperls.com/ascii-table
+                    if (
+                        (inputChar >= ' ' && inputChar <= '^') ||
+                        (inputChar >= 'a' && inputChar <= '~'))
+                    { 
                         element = AddCharToArray(element, inputChar);
                     }
                     else if(inputChar == '\n' ||  inputChar == '\0')
